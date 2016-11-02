@@ -1,7 +1,7 @@
 #include "ST.h"
 
 #include "mdat.h"
-#include "font.h"
+#include "dat/font.h"
 
 extern uint8_t end[];
 extern volatile uint32_t vbl_counter;
@@ -20,6 +20,7 @@ const uint16_t music_note_periods[] = {
 };
 
 volatile uint8_t music_playing = 0;
+int16_t music_detune = 0;
 uint16_t music_offs_a = 0*4*16;
 uint16_t music_offs_c = 0*4*16;
 uint16_t music_offs_d = 0*4*16;
@@ -33,6 +34,8 @@ void music_update(void)
 	if(!music_playing) {
 		return;
 	}
+
+	//music_detune -= 2; 
 
 	if(music_time_wait > 0) {
 		music_time_wait--;
@@ -62,12 +65,46 @@ void music_update(void)
 	uint8_t nd = mdat_pat_d[mdat_ord_d[music_offs_d>>4]][music_offs_d&15];
 	uint8_t outmask = 0x3F;
 
+	if(music_detune != 0) {
+		nc = 0;
+		nd = 0;
+	}
+
 	// Force a pop
 	PSG_REG = 0x08; PSG_DAT_W = 0x0F;
 
 	if(na != 0) {
-		uint16_t pa = music_note_periods[na&0xF];
-		pa >>= (na>>4);
+		uint16_t pa0 = music_note_periods[na&0xF];
+		pa0 >>= (na>>4);
+		uint16_t pa = pa0;
+		if(music_detune != 0) {
+			na = (na&0xF) + (na>>4)*12;
+			na += music_detune>>8;
+			if(na < 0x01 || na >= 0x80) {
+				na = 1;
+			}
+			na = (na%12) + ((na/12)<<4);
+			pa = pa0 = music_note_periods[na&0xF];
+			pa0 >>= (na>>4);
+			if(na != 1) {
+				uint8_t na1 = na+1;
+				if((na1&0xF) >= 0xC) {
+					na1 += 4;
+				}
+				uint16_t pa1 = music_note_periods[na1&0xF];
+				pa1 >>= (na1>>4);
+				int32_t pa0_base = pa0<<8;
+				int32_t pa1_base = pa1-pa0;
+				pa1_base *= (music_detune&0xFF);
+				int32_t pa_base = pa0_base + pa1_base;
+				pa_base += 128;
+				pa_base >>= 8;
+				pa = pa_base;
+				if(pa > 0xFFF) {
+					pa = 0xFFF;
+				}
+			}
+		}
 		PSG_REG = 0x00; PSG_DAT_W = pa;
 		PSG_REG = 0x01; PSG_DAT_W = pa>>8;
 		outmask &= ~0x01;
@@ -160,10 +197,11 @@ char const*const intro_texts[] = {
 	"presents",
 	":3",
 	NULL,
-	"a rushed demo",
-	"for",
+	"a demo for",
 	"sillyventure"
 	"2016",
+	"written in",
+	"2 days",
 	NULL,
 	"which asie",
 	"probably never",
@@ -203,7 +241,7 @@ void chequer_update_plain(int16_t mvx, int16_t mvy)
 		? chequer_rotates[mvx][old_offs_x&15]
 		: chequer_rotates[-mvx][new_offs_x&15]
 	);
-	uint16_t *p = vmem+1;
+	uint16_t *p = vmem+3;
 
 	// Y scroll
 	// TODO: fix line bug
@@ -279,17 +317,18 @@ void intro_text(void)
 	for(uint16_t y = 0; y < 200; y+=32) {
 		uint16_t *p = &vmem[80*y];
 		for(uint16_t x = 0; x < 80*16; x+=8) {
-			p[x+1] = 0xFFFF;
-			p[x+5] = 0x0000;
-			p[x+1+80*16] = 0x0000;
-			p[x+5+80*16] = 0xFFFF;
+			p[x+3] = 0xFFFF;
+			p[x+7] = 0x0000;
+			p[x+3+80*16] = 0x0000;
+			p[x+7+80*16] = 0xFFFF;
 		}
 	}
 
 	//
+	VID_PAL0[0] = 0x0000;
+	VID_PAL0[8] = 0x0001;
 	VID_PAL0[1] = 0x0777;
-	VID_PAL0[2] = 0x0001;
-	VID_PAL0[3] = 0x0777;
+	VID_PAL0[9] = 0x0777;
 	vwait_reset();
 
 	int line_idx = 0;
@@ -353,8 +392,12 @@ void intro_text(void)
 
 void plain_chequer()
 {
-	VID_PAL0[2] = 0x0123;
-	vwait_reset();
+	// hide image upload
+	for(int i = 0; i < 8; i++) {
+		VID_PAL0[0+i] = 0x0000;
+		VID_PAL0[8+i] = 0x0123;
+	}
+
 	vwait(1);
 	for(;;) {
 		chequer_update_plain(5, 1);
