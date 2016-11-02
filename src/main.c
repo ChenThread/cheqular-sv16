@@ -95,6 +95,12 @@ void vwait_reset(void)
 	vbl_expected_counter = vbl_counter;
 }
 
+const int16_t intro_dirs[][2] = {
+	{-4, 0},
+	{ 0, 3},
+	{ 3,-2},
+};
+
 char const*const intro_texts[] = {
 	"chen thread",
 	"presents",
@@ -111,39 +117,100 @@ char const*const intro_texts[] = {
 	NULL,
 	NULL,
 };
+uint16_t intro_chequer_idx = 0;
 
 // [amount_left][old_offset]
 uint16_t chequer_rotates[17][16];
+uint16_t coffs_plain_x = 0;
+uint16_t coffs_plain_y = 0;
 
 void chequer_init()
 {
-	for(int i = 0; i < 17; i++) {
+	for(int16_t i = 0; i < 17; i++) {
 		uint16_t v = (1<<i)-1;
-		for(int j = 0; j < 16; j++) {
+		for(int16_t j = 0; j < 16; j++) {
 			chequer_rotates[i][j] = v;
 			v = (v<<1)|(v>>15);
 		}
 	}
 }
 
-uint16_t coffs_plain_x = 0;
-uint16_t coffs_plain_y = 0;
+void chequer_update_plain(int16_t mvx, int16_t mvy)
+{
+	// X scroll
+	uint16_t old_offs_x = coffs_plain_x;
+	coffs_plain_x += mvx;
+	uint16_t new_offs_x = coffs_plain_x;
+	uint16_t old_offs_y = coffs_plain_y;
+	coffs_plain_y += mvy;
+	uint16_t new_offs_y = coffs_plain_y;
+	uint16_t r = (mvx >= 0
+		? chequer_rotates[mvx][old_offs_x&15]
+		: chequer_rotates[-mvx][new_offs_x&15]
+	);
+	uint16_t *p = vmem+1;
+
+	// Y scroll
+	// TODO: fix line bug
+	uint16_t flipy0 = 999;
+	uint16_t flipy1 = 999;
+	uint16_t flipyi = 0;
+	if(old_offs_y != new_offs_y) {
+		if(mvy < 0) {
+			flipy0 = new_offs_y&15;
+			flipy1 = old_offs_y&15;
+		} else {
+			flipy0 = old_offs_y&15;
+			flipy1 = new_offs_y&15;
+		}
+		if(flipy0 > flipy1) {
+			r ^= 0xFFFF;
+			flipy0 ^= flipy1;
+			flipy1 ^= flipy0;
+			flipy0 ^= flipy1;
+		}
+	}
+	uint16_t flipyd = flipy0^flipy1;
+
+	for(int16_t y = 0; y < 200; y += 1) {
+		if(y == flipy0) {
+			r = ~r;
+			flipy0 ^= flipyd;
+			flipy0 += flipyi;
+			flipyi ^= 16;
+		}
+
+		p[ 0*4] ^= r;
+		p[ 1*4] ^= r;
+		p[ 2*4] ^= r;
+		p[ 3*4] ^= r;
+		p[ 4*4] ^= r;
+		p[ 5*4] ^= r;
+		p[ 6*4] ^= r;
+		p[ 7*4] ^= r;
+		p[ 8*4] ^= r;
+		p[ 9*4] ^= r;
+		p[10*4] ^= r;
+		p[11*4] ^= r;
+		p[12*4] ^= r;
+		p[13*4] ^= r;
+		p[14*4] ^= r;
+		p[15*4] ^= r;
+		p[16*4] ^= r;
+		p[17*4] ^= r;
+		p[18*4] ^= r;
+		p[19*4] ^= r;
+		p += 80;
+	}
+}
+
 void intro_text_vwait(int wait_counter)
 {
 	for(int i = 0; i < wait_counter; i++) {
 		// Update chequerboard
-		// X scroll
-		int16_t mvx = -3;
-		uint16_t old_offs_x = coffs_plain_x;
-		coffs_plain_x += mvx;
-		uint16_t new_offs_x = coffs_plain_x;
-		uint16_t r = (mvx >= 0
-			? chequer_rotates[mvx][old_offs_x&15]
-			: chequer_rotates[-mvx][new_offs_x&15]
-		);
-		for(int x = 1; x < 80*200; x += 4) {
-			vmem[x] ^= r;
-		}
+		chequer_update_plain(
+			intro_dirs[intro_chequer_idx][0],
+			intro_dirs[intro_chequer_idx][1]);
 
 		// Wait for vblank
 		vwait(1);
@@ -154,9 +221,9 @@ void intro_text(void)
 {
 	//
 	// Fill background with chequerboard
-	for(int y = 0; y < 200; y+=32) {
+	for(uint16_t y = 0; y < 200; y+=32) {
 		uint16_t *p = &vmem[80*y];
-		for(int x = 0; x < 80*16; x+=8) {
+		for(uint16_t x = 0; x < 80*16; x+=8) {
 			p[x+1] = 0xFFFF;
 			p[x+5] = 0x0000;
 			p[x+1+80*16] = 0x0000;
@@ -192,13 +259,16 @@ void intro_text(void)
 				break;
 			}
 
+			// Change direction
+			intro_chequer_idx++;
+
 			continue;
 		}
 
 		int slen = strlen(char_ptr);
 		int slen2 = slen/2;
 		screen_ptr = (uint8_t *)vmem;
-		screen_ptr += 20*8*(8*(2*line_subidx+1));
+		screen_ptr += 20*8*(8*(2*line_subidx+1)+4);
 		screen_ptr += 20*4-(slen2&~1)*4+1-(slen2&1);
 
 		for(int x = 0; x < slen; x++) {
@@ -228,9 +298,13 @@ void intro_text(void)
 
 void plain_chequer()
 {
-	VID_PAL0[1] = 0x0777;
+	VID_PAL0[2] = 0x0123;
 	vwait_reset();
 	vwait(1);
+	for(;;) {
+		chequer_update_plain(5, 1);
+		vwait(1);
+	}
 }
 
 void _start(void)
