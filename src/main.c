@@ -9,8 +9,11 @@ extern volatile uint32_t vbl_counter;
 uint32_t vbl_expected_counter;
 
 uint16_t old_pal[16];
-uint8_t old_mode;
-uint8_t *old_vmem = NULL;
+uint8_t old_mode = 0;
+uint8_t old_vmem_h = 0;
+uint8_t old_vmem_m = 0;
+uint8_t old_vmem_l = 0;
+uint8_t old_stride = 0;
 
 uint8_t vmem_base[256*2+8*40*200];
 uint16_t *vmem;
@@ -467,7 +470,7 @@ void plain_chequer()
 	}
 
 	uint8_t soffs = 0;
-	for(;;) {
+	while(music_offs_a < 16*24) {
 		chequer_update_plain(
 			(sin_tab[(soffs+0x40)&0xFF]+2)>>4,
 			-((sin_tab[soffs]+2)>>4));
@@ -514,6 +517,11 @@ void _start(void)
 
 	// Set up video
 	vwait_force();
+	old_mode = VID_SHIFT_MODE_ST;
+	old_vmem_h = VID_BASE_H;
+	old_vmem_m = VID_BASE_M;
+	old_vmem_l = VID_BASE_L_STE;
+	old_stride = VID_STRIDE_STE;
 	VID_SHIFT_MODE_ST = 0x00;
 	VID_BASE_H = ((uint32_t)vmem)>>16;
 	VID_BASE_M = ((uint32_t)vmem)>>8;
@@ -526,11 +534,21 @@ void _start(void)
 	intro_text();
 	plain_chequer();
 
-	for(;;) {}
+	// Restore video
+	VID_SHIFT_MODE_ST = old_mode;
+	VID_BASE_H = old_vmem_h;
+	VID_BASE_M = old_vmem_m;
+	VID_BASE_L_STE = old_vmem_l;
+	VID_STRIDE_STE = old_stride;
 
 	// Restore palette
 	vwait_force();
 	for(int i = 0; i < 16; i++) {
 		VID_PAL0[i] = old_pal[i];
 	}
+
+	// Kill sound
+	music_playing = 0;
+	PSG_REG = 0x07; PSG_DAT_W = 0x3F;
+	PSG_REG = 0x0D; PSG_DAT_W = 0x00;
 }
