@@ -1,0 +1,9 @@
+# Output
+obj/*.o
+*.linux-elf
+cheqular.prg
+
+# VIM
+.*.swp
+.*.swo
+
