@@ -401,6 +401,9 @@ void intro_text(void)
 			// Change direction
 			intro_chequer_idx++;
 
+			// Change palette
+			VID_PAL0[8] <<= 4;
+
 			continue;
 		}
 
