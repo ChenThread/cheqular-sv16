@@ -256,15 +256,20 @@ char const*const intro_texts[] = {
 uint16_t intro_chequer_idx = 0;
 
 // [amount_left][old_offset]
-uint16_t chequer_rotates[17][16];
+uint16_t chequer_rotates[32][16];
 uint16_t coffs_plain_x = 0;
 uint16_t coffs_plain_y = 0;
 
 void chequer_init()
 {
-	for(int16_t i = 0; i < 17; i++) {
+	for(int16_t j = 0; j < 16; j++) {
+		chequer_rotates[0][j] = 0;
+	}
+
+	for(int16_t i = 1; i <= 16; i++) {
 		uint16_t v = (1<<i)-1;
 		for(int16_t j = 0; j < 16; j++) {
+			chequer_rotates[32-i][(j+i)&15] = v;
 			chequer_rotates[i][j] = v;
 			v = (v<<1)|(v>>15);
 		}
@@ -280,10 +285,7 @@ void chequer_update_plain(int16_t mvx, int16_t mvy)
 	uint16_t old_offs_y = coffs_plain_y;
 	coffs_plain_y += mvy;
 	uint16_t new_offs_y = coffs_plain_y;
-	uint16_t r = (mvx >= 0
-		? chequer_rotates[mvx][old_offs_x&15]
-		: chequer_rotates[-mvx][new_offs_x&15]
-	);
+	uint16_t r = chequer_rotates[mvx&31][old_offs_x&15];
 	uint16_t *p = vmem+3;
 
 	// Y scroll
