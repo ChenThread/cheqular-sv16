@@ -470,7 +470,7 @@ void plain_chequer()
 	}
 
 	uint8_t soffs = 0;
-	while(music_offs_a < 16*24) {
+	while(music_offs_a < 16*4*11) {
 		chequer_update_plain(
 			(sin_tab[(soffs+0x40)&0xFF]+2)>>4,
 			-((sin_tab[soffs]+2)>>4));
