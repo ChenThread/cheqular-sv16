@@ -22,7 +22,7 @@ void gswap1_main(void)
 
 	// Y second
 	chequer_sync_gswap_from_plain();
-	while(music_offs_a < 16*12-8 || ((coffs_gswap_y0^coffs_gswap_y1)&15) != 0) {
+	while(music_offs_a < 16*12-8 || ((coffs_gswap_y0^coffs_gswap_y1)&31) != 16) {
 		int16_t mvx = (sin_tab[(soffs+0x40)&0xFF]+2)>>4;
 		int16_t mvy = -((sin_tab[soffs]+2)>>4);
 		chequer_update_gswap_y(mvx, mvy-1, mvy+1);
@@ -58,7 +58,7 @@ void gswap1_main(void)
 			chequer_update_gswap_y(mvx, mvy-side, mvy+side);
 			vwait(1);
 			soffs++;
-		} while(((coffs_gswap_y0^coffs_gswap_y1)&15) != 0);
+		} while(((coffs_gswap_y0^coffs_gswap_y1)&31) != 16);
 		coffs_plain_y = coffs_gswap_y0;
 	}
 

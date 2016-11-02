@@ -89,7 +89,7 @@ void chequer_update_gswap_y(int16_t mvx, int16_t mvy0, int16_t mvy1)
 		r0 ^= rm0;
 		r1 ^= rm1;
 	}
-	if(((new_offs_y1)&16) != 0) {
+	if(((new_offs_y1)&16) == 0) {
 		r0 ^= rm1;
 		r1 ^= rm0;
 	}
