@@ -57,6 +57,9 @@ void title_main()
 				// Merge
 				int16_t ty = ty_high|ty_low;
 
+				// ASSERTION
+				while(ty < 0 || ty >= 200) {}
+
 				// Clear line
 				uint16_t *p = &vmem[20*4*ty];
 				for(int16_t x = 0; x < 20*4; x+=4) {
