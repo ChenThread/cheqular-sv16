@@ -62,9 +62,20 @@ _FIXUP_DUMMY_OFFS:
 	.extern music_update
 vbl_handler:
 	movem.l %d0-%d7/%a0-%a6, -(%a7)
+
+	/* Update music */
 	jsr music_update
-	movem.l (%a7)+, %d0-%d7/%a0-%a6
+
+	/* Update VBL counter */
 	addq.l #1, vbl_counter
+
+	/* Query keyboard */
+	move.w #11, -(%sp)
+	trap #1
+	addq.l #2, %sp
+	eor.l %d0, vbl_key_pressed
+
+	movem.l (%a7)+, %d0-%d7/%a0-%a6
 	rte
 
 _FIXUP_DUMMY:
@@ -77,6 +88,8 @@ oldstack: .long 0
 	.long 0
 	.global vbl_counter
 vbl_counter: .long 0
+	.global vbl_key_pressed
+vbl_key_pressed: .long 0
 old_vbl_handler: .long 0
 
 /*

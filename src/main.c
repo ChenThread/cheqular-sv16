@@ -6,6 +6,7 @@
 
 extern uint8_t end[];
 extern volatile uint32_t vbl_counter;
+extern volatile int32_t vbl_key_pressed;
 uint32_t vbl_expected_counter;
 
 uint16_t old_pal[16];
@@ -159,9 +160,9 @@ void _start(void)
 		*(uint64_t *)(uint16_t *)&vmem[i] = 0;
 	}
 
-	introtext_main();
-	title_main();
-	gswap1_main();
+	if(vbl_key_pressed == 0) { introtext_main(); }
+	if(vbl_key_pressed == 0) { title_main(); }
+	if(vbl_key_pressed == 0) { gswap1_main(); }
 
 	// Restore video
 	VID_SHIFT_MODE_ST = old_mode;

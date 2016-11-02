@@ -26,6 +26,7 @@ void title_main()
 	while(music_offs_a < 16*5) {
 		chequer_update_plain(4, 1);
 		vwait(1);
+		if(vbl_key_pressed != 0) { return; }
 	}
 
 	uint8_t soffs = 0;
@@ -35,6 +36,7 @@ void title_main()
 			-((sin_tab[soffs]+2)>>4));
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 
 	int16_t title_line_dead = 0;
@@ -73,6 +75,7 @@ void title_main()
 		}
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 
 	title_soffs = soffs;

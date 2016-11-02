@@ -10,6 +10,7 @@ void gswap1_main(void)
 		chequer_update_gswap_x(mvx-1, mvx+1, mvy);
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 	coffs_plain_x = coffs_gswap_x0;
 	while(music_offs_a < 16*10) {
@@ -18,6 +19,7 @@ void gswap1_main(void)
 		chequer_update_plain(mvx, mvy);
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 
 	// Y second
@@ -28,6 +30,7 @@ void gswap1_main(void)
 		chequer_update_gswap_y(mvx, mvy-1, mvy+1);
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 	coffs_plain_y = coffs_gswap_y0;
 	while(music_offs_a < 16*12) {
@@ -36,6 +39,7 @@ void gswap1_main(void)
 		chequer_update_plain(mvx, mvy);
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 
 	// Rotations
@@ -48,6 +52,7 @@ void gswap1_main(void)
 			chequer_update_gswap_x(mvx-side, mvx+side, mvy);
 			vwait(1);
 			soffs++;
+			if(vbl_key_pressed != 0) { return; }
 		} while(((coffs_gswap_x0^coffs_gswap_x1)&31) != 16);
 		coffs_plain_x = coffs_gswap_x0;
 		side = -side;
@@ -58,6 +63,7 @@ void gswap1_main(void)
 			chequer_update_gswap_y(mvx, mvy-side, mvy+side);
 			vwait(1);
 			soffs++;
+			if(vbl_key_pressed != 0) { return; }
 		} while(((coffs_gswap_y0^coffs_gswap_y1)&31) != 16);
 		coffs_plain_y = coffs_gswap_y0;
 	}
@@ -68,6 +74,7 @@ void gswap1_main(void)
 		chequer_update_plain(mvx, mvy);
 		vwait(1);
 		soffs++;
+		if(vbl_key_pressed != 0) { return; }
 	}
 }
 

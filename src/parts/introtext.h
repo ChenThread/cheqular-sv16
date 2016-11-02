@@ -44,6 +44,7 @@ void introtext_vwait(int wait_counter)
 
 		// Wait for vblank
 		vwait(1);
+		if(vbl_key_pressed != 0) { return; }
 	}
 }
 
@@ -79,6 +80,7 @@ void introtext_main(void)
 			line_idx++;
 
 			introtext_vwait(90);
+			if(vbl_key_pressed != 0) { return; }
 
 			// Clear text plane
 			for(int i = 0; i < 160*200; i+=4) {
@@ -117,6 +119,7 @@ void introtext_main(void)
 			screen_ptr[6*80*2] = font_data[c+6];
 			screen_ptr[7*80*2] = font_data[c+7];
 			introtext_vwait(2);
+			if(vbl_key_pressed != 0) { return; }
 			if((((uintptr_t)screen_ptr)&1) != 0) {
 				screen_ptr += 7;
 			} else {
