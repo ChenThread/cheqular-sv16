@@ -84,6 +84,7 @@ void vwait_reset(void)
 
 // CHEQUERBOARDS GO HERE
 #include "chequers/plain.h"
+#include "chequers/gswap.h"
 
 void chequer_init()
 {
@@ -104,6 +105,7 @@ void chequer_init()
 // PARTS GO HERE
 #include "parts/introtext.h"
 #include "parts/title.h"
+#include "parts/gswap1.h"
 
 void _start(void)
 {
@@ -159,6 +161,7 @@ void _start(void)
 
 	introtext_main();
 	title_main();
+	gswap1_main();
 
 	// Restore video
 	VID_SHIFT_MODE_ST = old_mode;

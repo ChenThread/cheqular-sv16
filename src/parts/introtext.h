@@ -31,6 +31,16 @@ void introtext_vwait(int wait_counter)
 		chequer_update_plain(
 			introtext_dirs[introtext_chequer_idx][0],
 			introtext_dirs[introtext_chequer_idx][1]);
+		/*
+		chequer_update_gswap_x(
+			introtext_dirs[introtext_chequer_idx][0]+1,
+			introtext_dirs[introtext_chequer_idx][0]-1,
+			introtext_dirs[introtext_chequer_idx][1]);
+		chequer_update_gswap_y(
+			introtext_dirs[introtext_chequer_idx][0],
+			introtext_dirs[introtext_chequer_idx][1]-1,
+			introtext_dirs[introtext_chequer_idx][1]+1);
+		*/
 
 		// Wait for vblank
 		vwait(1);
