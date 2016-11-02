@@ -17,6 +17,7 @@ SECTIONS
 		*(.text) *(.text.*)
 		*(.rodata)
 		*(.rodata1)
+		*(.rodata.str1.1)
 	}
 	.rela : { *(.rela) }
 	.rela.plt : { *(.rela.plt) }
