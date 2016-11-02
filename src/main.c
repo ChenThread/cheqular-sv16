@@ -2,6 +2,7 @@
 
 #include "mdat.h"
 #include "dat/font.h"
+#include "dat/s01.h"
 
 extern uint8_t end[];
 extern volatile uint32_t vbl_counter;
@@ -14,10 +15,52 @@ uint8_t *old_vmem = NULL;
 uint8_t vmem_base[256*2+8*40*200];
 uint16_t *vmem;
 
+const int8_t sin_tab[256] = {
+	0, 2, 3, 5, 6, 8, 9, 11, 12, 14, 16, 17, 19, 20, 22, 23,
+	24, 26, 27, 29, 30, 32, 33, 34, 36, 37, 38, 39, 41, 42, 43, 44,
+	45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 56, 57, 58, 59,
+	59, 60, 60, 61, 61, 62, 62, 62, 63, 63, 63, 64, 64, 64, 64, 64,
+	64, 64, 64, 64, 64, 64, 63, 63, 63, 62, 62, 62, 61, 61, 60, 60,
+	59, 59, 58, 57, 56, 56, 55, 54, 53, 52, 51, 50, 49, 48, 47, 46,
+	45, 44, 43, 42, 41, 39, 38, 37, 36, 34, 33, 32, 30, 29, 27, 26,
+	24, 23, 22, 20, 19, 17, 16, 14, 12, 11, 9, 8, 6, 5, 3, 2,
+	0, -2, -3, -5, -6, -8, -9, -11, -12, -14, -16, -17, -19, -20, -22, -23,
+	-24, -26, -27, -29, -30, -32, -33, -34, -36, -37, -38, -39, -41, -42, -43, -44,
+	-45, -46, -47, -48, -49, -50, -51, -52, -53, -54, -55, -56, -56, -57, -58, -59,
+	-59, -60, -60, -61, -61, -62, -62, -62, -63, -63, -63, -64, -64, -64, -64, -64,
+	-64, -64, -64, -64, -64, -64, -63, -63, -63, -62, -62, -62, -61, -61, -60, -60,
+	-59, -59, -58, -57, -56, -56, -55, -54, -53, -52, -51, -50, -49, -48, -47, -46,
+	-45, -44, -43, -42, -41, -39, -38, -37, -36, -34, -33, -32, -30, -29, -27, -26,
+	-24, -23, -22, -20, -19, -17, -16, -14, -12, -11, -9, -8, -6, -5, -3, -2,
+};
+
 const uint16_t music_note_periods[] = {
 	3822, 3608, 3405, 3214, 3034, 2863,
 	2703, 2551, 2408, 2273, 2145, 2025,
 };
+
+void unpack_rle(uint8_t *target, uint8_t *dat, uint16_t len)
+{
+	for(uint16_t i = 0; i < len; i+=3) {
+		uint8_t run_len = *(dat++);
+		uint8_t run_byte = *(dat++);
+		do {
+			target[0] = run_byte;
+			if((((uintptr_t)target)&1) != 0) {
+				target += 7;
+			} else {
+				target += 1;
+			}
+		} while((--run_len) != 0);
+		target[0] = *(dat++);
+		if((((uintptr_t)target)&1) != 0) {
+			target += 7;
+		} else {
+			target += 1;
+		}
+	}
+
+}
 
 volatile uint8_t music_playing = 0;
 int16_t music_detune = 0;
@@ -399,9 +442,32 @@ void plain_chequer()
 	}
 
 	vwait(1);
-	for(;;) {
-		chequer_update_plain(5, 1);
+	unpack_rle((uint8_t *)(vmem+0), dat_s01_p0, sizeof(dat_s01_p0));
+	unpack_rle((uint8_t *)(vmem+1), dat_s01_p1, sizeof(dat_s01_p1));
+	while(music_offs_a < 16*4) {
+		chequer_update_plain(4, 1);
 		vwait(1);
+	}
+
+	VID_PAL0[0+1] = 0x0777;
+	VID_PAL0[8+1] = 0x0777;
+	VID_PAL0[0+2] = 0x0000;
+	VID_PAL0[8+2] = 0x0000;
+	VID_PAL0[0+3] = 0x0010;
+	VID_PAL0[8+3] = 0x0022;
+
+	while(music_offs_a < 16*5) {
+		chequer_update_plain(4, 1);
+		vwait(1);
+	}
+
+	uint8_t soffs = 0;
+	for(;;) {
+		chequer_update_plain(
+			(sin_tab[(soffs+0x40)&0xFF]+2)>>4,
+			-((sin_tab[soffs]+2)>>4));
+		vwait(1);
+		soffs++;
 	}
 }
 
