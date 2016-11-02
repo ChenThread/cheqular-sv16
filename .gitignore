@@ -7,3 +7,6 @@ cheqular.prg
 .*.swp
 .*.swo
 
+# Other crap
+crap/
+
