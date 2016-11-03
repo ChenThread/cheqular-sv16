@@ -83,12 +83,4 @@ void melt1_main(void)
 		if(vbl_key_pressed != 0) { return; }
 		melt1_apply();
 	}
-
-	// TODO!
-	VID_PAL0[0] = 0x0200;
-	while(music_offs_a < 16*4*11) {
-		gswap1_update_text();
-		vwait(1);
-		if(vbl_key_pressed != 0) { return; }
-	}
 }

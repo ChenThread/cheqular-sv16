@@ -3,6 +3,7 @@
 #include "mdat.h"
 #include "dat/font.h"
 #include "dat/s01.h"
+#include "dat/s02.h"
 
 extern uint8_t end[];
 extern volatile uint32_t vbl_counter;
@@ -108,6 +109,7 @@ void chequer_init()
 #include "parts/title.h"
 #include "parts/gswap1.h"
 #include "parts/melt1.h"
+#include "parts/sun1.h"
 
 void _start(void)
 {
@@ -166,6 +168,7 @@ void _start(void)
 	if(vbl_key_pressed == 0) { title_main(); }
 	if(vbl_key_pressed == 0) { gswap1_main(); }
 	if(vbl_key_pressed == 0) { melt1_main(); }
+	if(vbl_key_pressed == 0) { sun1_main(); }
 
 	// Restore video
 	VID_SHIFT_MODE_ST = old_mode;

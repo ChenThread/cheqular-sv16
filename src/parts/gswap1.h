@@ -90,7 +90,7 @@ void gswap1_update_text(void)
 				// pass
 			}
 			gswap1_ty = -gswap1_ty*6;
-			gswap1_ty += 100;
+			gswap1_ty += 100-2;
 
 		} else {
 			gswap1_ty += 12;
