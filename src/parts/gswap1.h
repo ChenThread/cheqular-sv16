@@ -24,11 +24,12 @@ char const*const gswap1_text[] = {
 
 	"greasemonkey greets:",
 	"                    ",
-	"botb - dma-sc - mudlord - 505 - booze",
-	"farbrausch - jakim - titan - wudsn",
-	"censor - dhs - lamers - checkpoint",
-	"8bitbubsy - and many more who aren't",
-	"watching this demo",
+	"botb - dma-sc - crtc - mudlord - 505",
+	"booze - farbrausch - jakim - titan",
+	"wudsn - censor - dhs - lamers",
+	"checkpoint - 8bitbubsy - and many more",
+	"who aren't watching this demo",
+	//"----------------------------------------",
 	NULL,
 
 	"asie greets:",
@@ -40,6 +41,8 @@ char const*const gswap1_text[] = {
 
 	"asie currently wants to kill:",
 	" ",
+	" ",
+	"        ",
 	"greasemonkey",
 	NULL,
 
@@ -49,6 +52,15 @@ char const*const gswap1_text[] = {
 	"but BASIC is still for lamers",
 	NULL,
 
+	"if i had more time to prepare,",
+	"i would have given you a better",
+	"3d floor that doesn't distort",
+	"horribly like this one",
+	" ",
+	NULL,
+
+	" ",
+	" ",
 	"there's never a time to not honk",
 	NULL,
 

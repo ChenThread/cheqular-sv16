@@ -51,7 +51,8 @@ void music_update(void)
 
 	if(music_detune != 0) {
 		nc = 0;
-		nd = 0;
+		//nd = 0;
+		music_time_wait += (-music_detune+(1<<8))>>9;
 	}
 
 	// Force a pop

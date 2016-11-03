@@ -38,7 +38,7 @@ const uint8_t mdat_ord_d[] = {
 	1, 2, 1, 3,
 	1, 2, 1, 3,
 	1, 2, 1, 3,
-	1, 2, 1, 3,
+	1, 2, 1, 0,
 };
 
 const uint8_t mdat_pat_a[][16] = {
