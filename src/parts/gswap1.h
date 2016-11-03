@@ -40,9 +40,7 @@ char const*const gswap1_text[] = {
 	NULL,
 
 	"asie currently wants to kill:",
-	" ",
-	" ",
-	"        ",
+	"                    ",
 	"greasemonkey",
 	NULL,
 
@@ -56,12 +54,31 @@ char const*const gswap1_text[] = {
 	"i would have given you a better",
 	"3d floor that doesn't distort",
 	"horribly like this one",
-	" ",
 	NULL,
 
-	" ",
-	" ",
 	"there's never a time to not honk",
+	"                    ",
+	"honks out for chen",
+	"                    ",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
+	"HONK HONK HONK HONK HONK HONK HONK HONK",
 	NULL,
 
 	//"----------------------------------------",
@@ -76,6 +93,8 @@ uint8_t *gswap1_screen_ptr = NULL;
 int16_t gswap1_tidx = 0;
 int16_t gswap1_ty = -1;
 int16_t gswap1_text_wait = 20;
+
+uint8_t gswap1_in_sun1 = 0;
 
 void gswap1_update_text(void)
 {
@@ -101,11 +120,19 @@ void gswap1_update_text(void)
 			for(gswap1_ty = 0; gswap1_text[gswap1_tidx-1+gswap1_ty] != NULL; gswap1_ty++) {
 				// pass
 			}
-			gswap1_ty = -gswap1_ty*6;
-			gswap1_ty += 100-2;
+
+			if(gswap1_in_sun1 != 0) {
+				gswap1_ty = 100+2;
+			} else {
+				gswap1_ty = -gswap1_ty*6;
+				gswap1_ty += 100-2;
+			}
 
 		} else {
 			gswap1_ty += 12;
+			if(gswap1_ty+6 > 200) {
+				gswap1_ty = 0;
+			}
 		}
 		if(gswap1_tptr == NULL) {
 			gswap1_text_wait = 180;

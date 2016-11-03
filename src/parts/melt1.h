@@ -51,6 +51,9 @@ void melt1_calc(void)
 		melt1_ytacc[x]++;
 		melt1_yacc[x]++;
 		melt1_amt--;
+		if(melt1_amt == 80*50/2) {
+			gswap1_in_sun1 = 1;
+		}
 	}
 }
 
