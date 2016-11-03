@@ -1,0 +1,16 @@
+Entry name: Cheqular
+Author (group): Chen Thread
+Authors (people who made it): GreaseMonkey
+Category: Atari ST/STe 96KB Intro
+
+----
+
+Required hardware config:
+
+Use the 1040 STe. I've only tested this in Hatari so far,
+but I did check both ST and STe with EmuTOS,
+and it does run with 1MB under that config.
+
+Don't autoload this, and don't run it off an actual floppy,
+unless you're happy with the motor running for the entire demo.
+
