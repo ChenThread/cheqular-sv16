@@ -81,7 +81,7 @@ void gswap1_update_text(void)
 			}
 
 			// Clear text plane
-			for(uint16_t i = 0; i < 20*4*200; i+=4) {
+			for(uint16_t i = 0; i < 80*200; i+=4) {
 				vmem[i+0] = 0;
 			}
 
@@ -181,7 +181,7 @@ void gswap1_main(void)
 
 	// Rotations
 	int16_t side = 1;
-	while(music_offs_a < 16*16-16-8) {
+	while(music_offs_a < 16*15-16-8) {
 		chequer_sync_gswap_from_plain();
 		do {
 			int16_t mvx = (sin_tab[(soffs+0x40)&0xFF]+2)>>4;
@@ -208,8 +208,8 @@ void gswap1_main(void)
 	}
 
 	// Slowdown
-	while(music_offs_a < 16*16-8) {
-		int16_t amp = 16*16-8-music_offs_a;
+	while(music_offs_a < 16*15-8) {
+		int16_t amp = 16*15-8-music_offs_a;
 		int16_t mvx = (sin_tab[(soffs+0x40)&0xFF]);
 		int16_t mvy = -((sin_tab[soffs]));
 		mvx *= amp;
@@ -220,13 +220,6 @@ void gswap1_main(void)
 		mvy >>= 8;
 		gswap1_update_text();
 		chequer_update_plain(mvx, mvy);
-		vwait(1);
-		soffs++;
-		if(vbl_key_pressed != 0) { return; }
-	}
-
-	while(music_offs_a < 16*4*11) {
-		gswap1_update_text();
 		vwait(1);
 		soffs++;
 		if(vbl_key_pressed != 0) { return; }

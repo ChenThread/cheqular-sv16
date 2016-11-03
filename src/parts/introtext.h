@@ -83,8 +83,8 @@ void introtext_main(void)
 			if(vbl_key_pressed != 0) { return; }
 
 			// Clear text plane
-			for(int i = 0; i < 160*200; i+=4) {
-				vmem[i] = 0;
+			for(uint16_t i = 0; i < 80*200; i+=4) {
+				vmem[i+0] = 0;
 			}
 
 			// End section if at end of texts

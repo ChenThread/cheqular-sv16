@@ -16,7 +16,7 @@ uint8_t old_vmem_m = 0;
 uint8_t old_vmem_l = 0;
 uint8_t old_stride = 0;
 
-uint8_t vmem_base[256*2+8*40*200];
+uint8_t vmem_base[256*2+160*(200+32+16)];
 uint16_t *vmem;
 
 const int8_t sin_tab[256] = {
@@ -107,10 +107,11 @@ void chequer_init()
 #include "parts/introtext.h"
 #include "parts/title.h"
 #include "parts/gswap1.h"
+#include "parts/melt1.h"
 
 void _start(void)
 {
-	vmem = (uint16_t *)((0xFF+(uintptr_t)vmem_base)&~0xFF);
+	vmem = (uint16_t *)((0xFF+160*8+(uintptr_t)vmem_base)&~0xFF);
 
 	// Save palette
 	for(int i = 0; i < 16; i++) {
@@ -156,13 +157,15 @@ void _start(void)
 	VID_BASE_M = ((uint32_t)vmem)>>8;
 	VID_STRIDE_STE = 0;
 
-	for(int i = 0; i < 4*40*200; i+=4) {
+	for(int i = 0; i < 80*200; i+=4) {
 		*(uint64_t *)(uint16_t *)&vmem[i] = 0;
 	}
 
+	// PARTS - run them
 	if(vbl_key_pressed == 0) { introtext_main(); }
 	if(vbl_key_pressed == 0) { title_main(); }
 	if(vbl_key_pressed == 0) { gswap1_main(); }
+	if(vbl_key_pressed == 0) { melt1_main(); }
 
 	// Restore video
 	VID_SHIFT_MODE_ST = old_mode;

@@ -63,7 +63,7 @@ void title_main()
 				while(ty < 0 || ty >= 200) {}
 
 				// Clear line
-				uint16_t *p = &vmem[20*4*ty];
+				uint16_t *p = &vmem[80*ty];
 				for(int16_t x = 0; x < 20*4; x+=4) {
 					p[x+0] = 0;
 					p[x+1] = 0;
